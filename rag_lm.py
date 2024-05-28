@@ -46,7 +46,7 @@ def html_to_text(html_content):
 
 
 def parse_html():
-    dir = '/content/pek'
+    dir = './pek'
     source_chunks = []
     splitter = CharacterTextSplitter(separator=" ",  chunk_size=1024, chunk_overlap=512)
     # splitter = RecursiveCharacterTextSplitter(separators=["\n\n", "\n", "(?<=\. )", ". "],  chunk_size=1024, chunk_overlap=512)
@@ -80,7 +80,9 @@ def get_message_content(topic, index_db, k_num):
     # Поиск релевантных отрезков из базы знаний
     docs = index_db.similarity_search(topic, k = k_num)
     message_content = re.sub(r'\n{2}', ' ', '\n '.join([f'\n#### Document excerpt №{i+1}####\n' + doc.page_content + '\n' for i, doc in enumerate(docs)]))
-    sources = re.sub(r'\n{2}', ' ', '\n '.join([doc.metadata['source'] + '\n' for i, doc in enumerate(docs)]))
+    sources = list(set(doc.metadata['source'] for doc in docs))
+    sources = '\n'.join(sources)
+    # sources = re.sub(r'\n{2}', ' ', '\n '.join([doc.metadata['source'] + '\n' for i, doc in enumerate(docs)]))
     print(f"message_content={message_content}")
     return message_content, sources
 
@@ -105,14 +107,12 @@ def answer_index(system, topic, message_content, temp):
 
     answer = completion.choices[0].message.content
 
-    return answer  # возвращает ответ
+    return answer
 
 # Загружаем текст Базы Знаний из файла
 source_chunks = parse_html()
 # Создаем индексную Базу Знаний
 index_db = create_index_db(source_chunks)
-# Загружаем промпт для модели, который будет подаваться в system
-# system = 'Ты сотрудник поддержки компании занимающейся логистикой, тебя зовут пекGPT и ты отвечаешь на вопросы сотрудников в чате. У тебя есть документ со всеми материалами о внутренних процессах и регламентах. Не упоминай документ или его отрывках при ответе, сотрудник ничего не должен знать о документе, по которому ты отвечаешь. Ответь так, чтобы сотрудник решил свой вопрос. То чего нет в документе мы не можем это ответить. Не употребляй фразы вида “По нашему документу”, “в нашем документе”, “в документе с материалами”.'
 
 system = 'Ты сотрудник поддержки компании занимающейся логистикой, тебя зовут пекGPT и ты отвечаешь на вопросы сотрудников в чате. У тебя есть документ со всеми материалами о внутренних процессах и регламентах. Ответь так, чтобы сотрудник решил свой вопрос. То чего нет в документе мы не можем это ответить. Не употребляй фразы вида “По нашему документу”, “в нашем документе”, “в документе с материалами”.'
 
@@ -124,7 +124,7 @@ def answer_user_question(topic):
     message_content, sources = get_message_content(topic, index_db, k_num=5)
     # Делаем запрос в модель и получаем ответ модели
     answer = answer_index(system, topic, message_content, temp=0.1)
-    answer = answer + '\n' + sources
+    answer = answer + '\n\n' + sources
     return answer, message_content
 
 if __name__ == '__main__':
