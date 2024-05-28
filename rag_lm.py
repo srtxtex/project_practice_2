@@ -80,8 +80,9 @@ def get_message_content(topic, index_db, k_num):
     # Поиск релевантных отрезков из базы знаний
     docs = index_db.similarity_search(topic, k = k_num)
     message_content = re.sub(r'\n{2}', ' ', '\n '.join([f'\n#### Document excerpt №{i+1}####\n' + doc.page_content + '\n' for i, doc in enumerate(docs)]))
+    sources = re.sub(r'\n{2}', ' ', '\n '.join([doc.metadata['source'] + '\n' for i, doc in enumerate(docs)]))
     print(f"message_content={message_content}")
-    return message_content
+    return message_content, sources
 
 
 def answer_index(system, topic, message_content, temp):
@@ -120,9 +121,10 @@ system = 'Ты сотрудник поддержки компании заним
 
 def answer_user_question(topic):
     # Ищем реливантные вопросу чанки и формируем контент для модели, который будет подаваться в user
-    message_content = get_message_content(topic, index_db, k_num=5)
+    message_content, sources = get_message_content(topic, index_db, k_num=5)
     # Делаем запрос в модель и получаем ответ модели
     answer = answer_index(system, topic, message_content, temp=0.1)
+    answer = answer + '\n' + sources
     return answer, message_content
 
 if __name__ == '__main__':

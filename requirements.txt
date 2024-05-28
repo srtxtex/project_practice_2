@@ -5,4 +5,6 @@ langchain-community
 langchain-core
 faiss-cpu
 sentence_transformers
+openai
+tools
 

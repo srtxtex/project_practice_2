@@ -13,7 +13,7 @@ TOKEN = os.environ.get("TOKEN")
 
 # функция команды /start
 async def start(update, context):
-  await update.message.reply_text('Привет! Это update_context бот.')
+  await update.message.reply_text('Привет! Это бот пекGPT.')
 
 # функция для текстовых сообщений
 async def text(update, context):
