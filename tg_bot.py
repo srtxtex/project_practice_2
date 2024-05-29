@@ -10,7 +10,6 @@ load_dotenv()
 TOKEN = os.environ.get("TOKEN")
 
 
-
 # функция команды /start
 async def start(update, context):
   await update.message.reply_text('Привет! Это бот пекGPT.')
@@ -40,7 +39,6 @@ async def text(update, context):
 
 
 def main():
-
     # точка входа в приложение
     application = Application.builder().token(TOKEN).build()
     print('Бот запущен..!')
@@ -55,8 +53,6 @@ def main():
     application.run_polling()
 
     print('Бот остановлен..!')
-
-
 
 
 if __name__ == "__main__":
