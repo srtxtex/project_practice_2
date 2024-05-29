@@ -7,4 +7,4 @@ faiss-cpu
 sentence_transformers
 openai
 tools
-
+beautifulsoup4
