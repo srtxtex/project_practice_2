@@ -22,11 +22,11 @@ def create_index_db(source_chunks):
     return db
 
 
-if __name__ == '__main__':    
+if __name__ == '__main__':
     with open('./data/source_chunks.pkl', 'rb') as file:
         source_chunks = pickle.load(file)
 
     index_db = create_index_db(source_chunks)
 
     with open('./data/index_db.pkl', 'wb') as file:
-        pickle.dump(index_db, file)    
+        pickle.dump(index_db, file)

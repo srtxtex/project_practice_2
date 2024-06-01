@@ -1,7 +1,7 @@
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from dotenv import load_dotenv
 import os
-import rag_lm
+import src.rag_lm as rag_lm
 
 # возьмем переменные окружения из .env
 load_dotenv()
@@ -12,7 +12,8 @@ TOKEN = os.environ.get("TOKEN")
 
 # функция команды /start
 async def start(update, context):
-  await update.message.reply_text('Привет! Это бот пекGPT.')
+    await update.message.reply_text('Привет! Это бот пекGPT.')
+
 
 # функция для текстовых сообщений
 async def text(update, context):
@@ -27,10 +28,9 @@ async def text(update, context):
     topic = update.message.text
     print(f'text: {topic}')
 
-    chat_type = update.message.chat.type
+    # chat_type = update.message.chat.type
 
-    reply_text, gpt_message_content = rag_lm.answer_user_question(topic)
-
+    reply_text, _ = rag_lm.answer_user_question(topic)
 
     await update.message.reply_text(f'{reply_text}')
 
