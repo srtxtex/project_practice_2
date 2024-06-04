@@ -17,7 +17,11 @@ DIR = './pek/html/'
 
 # функция команды /start
 async def start(update, context):
-  await update.message.reply_text('Привет! Это бот пекGPT.')
+    await update.message.reply_text(
+        'Привет! Это бот пекGPT.'
+        'Готов к работе.'
+        'Задайте ваш вопрос.'
+    )
 
 # функция для текстовых сообщений
 async def text(update, context):
