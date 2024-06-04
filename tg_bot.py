@@ -1,18 +1,27 @@
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from dotenv import load_dotenv
 import os
+
 import rag_lm
+
 
 # возьмем переменные окружения из .env
 load_dotenv()
 
-# загружаем значеняи из файла .env
+# загружаем значение токена из файла .env
 TOKEN = os.environ.get("TOKEN")
+
+# директория сохранения загруженных файлов
+DIR = './pek/html/'
 
 
 # функция команды /start
 async def start(update, context):
-  await update.message.reply_text('Привет! Это бот пекGPT.')
+    await update.message.reply_text(
+        'Привет! Это бот пекGPT.'
+        'Готов к работе.'
+        'Задайте ваш вопрос.'
+    )
 
 # функция для текстовых сообщений
 async def text(update, context):
@@ -37,6 +46,31 @@ async def text(update, context):
     print(f'reply_text:\n{reply_text}')
     print('-------------------')
 
+# функция обработки загруженных файлов
+async def upload(update, context):
+    fileName = update.message.document.file_name
+
+    if fileName.endswith('.html'):
+        new_file = await update.message.effective_attachment.get_file()
+
+        await new_file.download_to_drive(f'{DIR}{fileName}')
+        await update.message.reply_text(
+            f'Файл {fileName} успешно загружен!\n'
+            'Введите /restart после загрузки всех файлов для применения обработки.'
+        )
+    else:
+        await update.message.reply_text('Отправляемый файл должен быть с расширением .html')
+
+# async def restart(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+# функция перезаргузки бота
+async def restart(update, context):
+    await update.message.reply_text(
+        'Применение обработки данных занимает некоторое время.\n'
+        'Идёт перезагрузка.\n'
+        'Нажмите /start и ожидайте приветственного сообщения'
+    )
+    raise SystemExit()
 
 def main():
     # точка входа в приложение
@@ -45,9 +79,15 @@ def main():
 
     # добавляем обработчик команды /start
     application.add_handler(CommandHandler("start", start))
+    
+    # добавляем обработчик команды /restart
+    application.add_handler(CommandHandler('restart', restart))
 
     # добавляем обработчик текстовых сообщений
     application.add_handler(MessageHandler(filters.TEXT, text))
+    
+    # добавляем обработчик загруженных файлов
+    application.add_handler(MessageHandler(filters.ATTACHMENT, upload))
 
     # запуск приложения (для остановки нужно нажать Ctrl-C)
     application.run_polling()
