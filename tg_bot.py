@@ -50,7 +50,10 @@ async def upload(update, context):
         new_file = await update.message.effective_attachment.get_file()
 
         await new_file.download_to_drive(f'{DIR}{fileName}')
-        await update.message.reply_text(f'Файл {fileName} успешно загружен!\nВведите /restart после загрузки всех файлов для применения обработки.')
+        await update.message.reply_text(
+            f'Файл {fileName} успешно загружен!\n'
+            'Введите /restart после загрузки всех файлов для применения обработки.'
+        )
     else:
         await update.message.reply_text('Отправляемый файл должен быть с расширением .html')
 
@@ -58,7 +61,11 @@ async def upload(update, context):
 
 # функция перезаргузки бота
 async def restart(update, context):
-    await update.message.reply_text('Применение обработки данных занимает некоторое время. Ожидайте перезагрузки!')
+    await update.message.reply_text(
+        'Применение обработки данных занимает некоторое время.\n'
+        'Идёт перезагрузка.\n'
+        'Нажмите /start и ожидайте приветственного сообщения'
+    )
     raise SystemExit()
 
 def main():
